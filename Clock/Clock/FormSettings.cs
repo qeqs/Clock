@@ -10,24 +10,38 @@ using System.Windows.Forms;
 
 namespace Clock
 {
+    //здесь все так запутанно потому что я сначала написал а потом вспомнил про декоратор!!! DONT WORK!!!!
     public partial class FormSettings : Form
     {
-        public FormSettings(Clock clock)
+        public FormSettings(IClockBase clock)
         {
             InitializeComponent();
-            this.clock = clock;
-            dateTimePicker.Value = clock.Time;
+            this.ClockBase = clock;
+            this.clock = (Clock)ClockBase;
+            dateTimePicker.Value = ((Clock)ClockBase).Time;
         }
+        
+        Clock temp;
+        IClockBase ClockBase;
         Clock clock;
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            clock.Time = this.dateTimePicker.Value;
+           
+            temp = new Clock(clock.Location, clock.DrawingSize, clock.ParentForm);
+            ((Clock)temp).Time = this.dateTimePicker.Value;
             TimeSpan hh = TimeSpan.Parse(textBoxOffset.Text);
-            clock.Offset = hh;
-            if(radioButtonClockFace.Checked)
+            ((Clock)temp).Offset = hh;
+
+            if (radioButtonClockFace.Checked)
             {
-                
+                ClockBase = (new ClockWithArrows(temp));
             }
+            else
+            {
+                ClockBase = temp;
+            }
+
+            
             Close();
         }
     }

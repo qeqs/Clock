@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClockBase.cs" />
     <Compile Include="Clock.cs" />
     <Compile Include="ClockEvent.cs" />
     <Compile Include="ClockHourNotifier.cs" />

@@ -8,7 +8,8 @@ using System.Windows.Forms;
 
 namespace Clock
 {
-    public class Clock
+    //компонент
+    public class Clock:IClockBase
     {
         protected Bitmap bm;
         protected Graphics g;
@@ -18,6 +19,7 @@ namespace Clock
         protected Point location;
         protected DateTime time;
         protected TimeSpan offset;
+        protected Form parentForm;
         /// <summary>
         /// Выполняется после того как переменная времени изменилась
         /// </summary>
@@ -29,6 +31,11 @@ namespace Clock
         public ClockEvent OffsetChanged = new ClockEvent();
         //public event EventHandler OffsetChanged;
 
+        #region props
+        public Graphics Graphic
+        {
+            get { return g; }
+        }
         public Color Background
         {
             get
@@ -54,7 +61,9 @@ namespace Clock
                 location = value;
             }
         }
-
+        /// <summary>
+        /// возвращает время UTC(0) при инициализации, где offset = 0
+        /// </summary>
         public DateTime Time
         {
             get
@@ -87,8 +96,45 @@ namespace Clock
             }
         }
 
+        public Size DrawingSize
+        {
+            get
+            {
+                return bm.Size;
+            }
+
+            set
+            {
+                bm = new Bitmap( value.Width,value.Height);
+                _g = Graphics.FromImage(bm);
+            }
+        }
+
+        public Form ParentForm
+        {
+            get
+            {
+                return parentForm;
+            }
+        }
+
+        public Brush Titlecol
+        {
+            get
+            {
+                return titlecol;
+            }
+
+            set
+            {
+                titlecol = value;
+            }
+        }
+        #endregion
+        
         public Clock(Point location,Size size,Form form)
         {
+
             bm = new Bitmap(size.Width, size.Height);
             g = form.CreateGraphics();
             _g = Graphics.FromImage(bm);
@@ -96,20 +142,28 @@ namespace Clock
             Time = DateTime.UtcNow;
             Offset = TimeSpan.Zero;
             form.Resize += new EventHandler(OnResize);
+            parentForm = form;
         }
         /// <summary>
-        /// Отрисовка должна быть на всю форму
+        /// В таймер наверно, а может и нет
         /// </summary>
         public virtual void Show()
         {
             _g.Clear(background);
 
-            string timestring = Time.ToShortTimeString();
+            string timestring = Time.ToLongTimeString();//Time.ToShortTimeString();
             float fontsize = (bm.Size.Width<bm.Size.Height?bm.Size.Width:bm.Size.Height) / timestring.Length;
             Font font = new Font("Times New Roman", fontsize);
             _g.DrawString(timestring,font,titlecol, bm.Size.Width / 2 - (fontsize*(timestring.Length-1))/2, bm.Size.Height / 2 - fontsize);
 
             g.DrawImage(bm as Image, location);
+        }
+        /// <summary>
+        /// это точно в таймер
+        /// </summary>
+        public void Update()
+        {
+            Time = DateTime.UtcNow;
         }
         /// <summary>
         /// Маштабирование

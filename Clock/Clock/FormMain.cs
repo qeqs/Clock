@@ -15,6 +15,7 @@ namespace Clock
         public FormMain()
         {
             InitializeComponent();
+            timer.Interval = 200;
         }
         Clock clock;
 
@@ -24,6 +25,7 @@ namespace Clock
             clock.TimeChanged.Subscribe(new ClockMinuteNotifier());
             clock.TimeChanged.Subscribe(new ClockMinuteNotifier());
             clock.Show();
+            timer.Start();
         }
 
         private void FormMain_Paint(object sender, PaintEventArgs e)
@@ -32,7 +34,15 @@ namespace Clock
         }
         private void buttonSettings_Click(object sender, EventArgs e)
         {
-            new FormSettings(clock).Show();
+           new FormSettings(clock).Show();
+
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            clock.Update();
+            clock.Show();
+            //Invalidate();
         }
     }
 }
