@@ -16,31 +16,21 @@ namespace Clock
         public FormSettings(IClockBase clock)
         {
             InitializeComponent();
-            this.ClockBase = clock;
-            this.clock = (Clock)ClockBase;
-            dateTimePicker.Value = ((Clock)ClockBase).Time;
+            this.clock = (Clock)clock;
+            dateTimePicker.Value = this.clock.Time;
         }
         
-        Clock temp;
-        IClockBase ClockBase;
         Clock clock;
         private void buttonOK_Click(object sender, EventArgs e)
         {
-           
-            temp = new Clock(clock.Location, clock.DrawingSize, clock.ParentForm);
-            ((Clock)temp).Time = this.dateTimePicker.Value;
-            TimeSpan hh = TimeSpan.Parse(textBoxOffset.Text);
-            ((Clock)temp).Offset = hh;
 
-            if (radioButtonClockFace.Checked)
-            {
-                ClockBase = (new ClockWithArrows(temp));
-            }
-            else
-            {
-                ClockBase = temp;
-            }
-
+            Settings.Set(radioButtonClockFace.Checked,clock.Location, clock.DrawingSize, clock.ParentForm, c =>
+                 {
+                     c.Time = this.dateTimePicker.Value;
+                     TimeSpan hh = TimeSpan.Parse(textBoxOffset.Text);
+                     c.Offset = hh;
+                     return c;
+                 });           
             
             Close();
         }

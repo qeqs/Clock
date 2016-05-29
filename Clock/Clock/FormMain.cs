@@ -15,15 +15,15 @@ namespace Clock
         public FormMain()
         {
             InitializeComponent();
-            timer.Interval = 200;
+            timer.Interval = 100;
         }
-        Clock clock;
+        IClockBase clock;
 
         private void FormMain_Load(object sender, EventArgs e)
         {
             clock = new Clock(new Point(0, 0), Size, this);
-            clock.TimeChanged.Subscribe(new ClockMinuteNotifier());
-            clock.TimeChanged.Subscribe(new ClockMinuteNotifier());
+            ((Clock)clock).TimeChanged.Subscribe(new ClockMinuteNotifier());
+            ((Clock)clock).TimeChanged.Subscribe(new ClockMinuteNotifier());
             clock.Show();
             timer.Start();
         }
@@ -34,8 +34,21 @@ namespace Clock
         }
         private void buttonSettings_Click(object sender, EventArgs e)
         {
-           new FormSettings(clock).Show();
+            FormSettings set = new FormSettings(clock);
+            set.FormClosed += new FormClosedEventHandler(SetClocks);
+            set.Show();
 
+        }
+        private void SetClocks(object sender,EventArgs e)
+        {
+            if(Settings.IsClockFace)
+            {
+                clock = new ClockWithArrows(Settings.ObjectState);
+            }
+            else
+            {
+                clock = Settings.ObjectState;
+            }
         }
 
         private void timer_Tick(object sender, EventArgs e)
