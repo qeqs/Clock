@@ -31,7 +31,7 @@ namespace Clock
         public ClockEvent OffsetChanged = new ClockEvent();
         //public event EventHandler OffsetChanged;
 
-        #region props
+        #region propreties
         public Graphics Graphic
         {
             get { return g; }
@@ -130,8 +130,16 @@ namespace Clock
                 titlecol = value;
             }
         }
+
+        public IClockBase Clone
+        {
+            get
+            {
+                return this;
+            }
+        }
         #endregion
-        
+
         public Clock(Point location,Size size,Form form)
         {
 

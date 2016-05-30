@@ -23,7 +23,7 @@ namespace Clock
         {
             clock = new Clock(new Point(0, 0), Size, this);
             ((Clock)clock).TimeChanged.Subscribe(new ClockMinuteNotifier());
-            ((Clock)clock).TimeChanged.Subscribe(new ClockMinuteNotifier());
+            ((Clock)clock).TimeChanged.Subscribe(new ClockHourNotifier());
             clock.Show();
             timer.Start();
         }
@@ -34,7 +34,8 @@ namespace Clock
         }
         private void buttonSettings_Click(object sender, EventArgs e)
         {
-            FormSettings set = new FormSettings(clock);
+
+            FormSettings set = new FormSettings(clock.Clone);
             set.FormClosed += new FormClosedEventHandler(SetClocks);
             set.Show();
 

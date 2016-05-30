@@ -11,5 +11,9 @@ namespace Clock
     {
          void Show();
          void Update();
+        /// <summary>
+        /// чтобы не вылетало исключений в типах с декоратором
+        /// </summary>
+        IClockBase Clone { get; }
     }
 }
