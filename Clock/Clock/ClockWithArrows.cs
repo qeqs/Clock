@@ -38,45 +38,47 @@ namespace Clock
         }
         public void Show()
         {
-            _g.Clear(clock.Background);
-
-            _g.DrawEllipse(new Pen(clock.Titlecol),
-                new Rectangle((int)(center.X - R), (int)(center.Y - R), (int)R * 2, (int)R * 2));
-
             double PI = Math.PI;
             int fontsize = (int)(R * PI / 12);
+
+            _g.Clear(SystemColors.Control);
+
+
+            Rectangle clockrect = new Rectangle((int)(center.X - R-fontsize/2), (int)(center.Y - R-fontsize/2), (int)((R * 2) + fontsize), (int)((R * 2) + fontsize));
+
+            _g.FillEllipse(new SolidBrush(clock.Background), 
+                clockrect);
+            _g.DrawEllipse(new Pen(clock.Titlecol),
+               clockrect);
+            
             //Font font = new Font("Times New Roman", fontsize);
 
-            double[] angles = new double[12];//{PI / 3, PI / 6, 0, 11 * PI / 6, 5 * PI / 3, 3 * PI / 2, 4 * PI / 3, 7 * PI / 6, PI, 5 * PI / 6, 2 * PI / 3, PI / 2 };
-
-            for(int i = 0; i<angles.Length;i++)
+            Point pt = new Point();
+            Font f = new Font("Arial", fontsize/2);
+            for (int i = 1; i < 13; i++)
             {
-                angles[i] = ( i*PI)+(PI / 2.0) + (i) * ( 2*PI / 12.0);//что-то тут надо придумать чтобы правильно рисовались значения на циферблате
-            }
-            //рисуем цифры на циферблате
-            for (int i = 0; i < angles.Length; i++)
-            {
-                _g.DrawLine(new Pen(clock.Titlecol,fontsize/10), (float)(center.X + R * Math.Cos(180 * angles[i] / PI)), (float)(center.Y - R * Math.Sin(180 * angles[i] / PI)),(float)(center.X + (R-fontsize) * Math.Cos(180 * angles[i] / PI)), (float)(center.Y - (R-fontsize) * Math.Sin(180 * angles[i] / PI)));
-
+                pt.X = (int)(center.X + R * Math.Cos((i * Math.PI / 6.0) - Math.PI / 2.0)-7);
+                pt.Y = (int)(center.Y + R * Math.Sin((i * Math.PI / 6.0) - Math.PI / 2.0)-7);
+                _g.DrawString(i.ToString(), f, Brushes.Black, pt);
             }
             
             //рисуем стрелочки
-            int hour = ((clock.Time.Hour >= 12) ? clock.Time.Hour - 12 : clock.Time.Hour) - 1;
-            double min = 2*PI / 59 *clock.Time.Minute;
-            double sec = 2*PI / 59 * clock.Time.Second;
 
             //часовая
+            double angle = ((clock.Time.Hour / 12.0) * 2 * Math.PI) + ((clock.Time.Minute / (60.0 * 12.0)) * 2 * Math.PI) - Math.PI / 2.0;
             _g.DrawLine(new Pen(clock.Titlecol, fontsize / 5), center.X, center.Y,
-                (float)(center.X + R / 2 * Math.Cos((180 * angles[hour] / PI))),//+ 12 * min / 360)), 
-                (float)(center.Y - R / 2 * Math.Sin((180 * angles[hour] / PI))));// + 12 * min / 360)));
+                (float)(center.X + R / 2 * Math.Cos(-angle)),//+ 12 * min / 360)), 
+                (float)(center.Y - R / 2 * Math.Sin(-angle)));// + 12 * min / 360)));
 
             //минутная
+            angle = ((clock.Time.Minute / 60.0)+ (clock.Time.Second / (60.0*12.0))) * 2 * Math.PI - Math.PI / 2.0;
             _g.DrawLine(new Pen(clock.Titlecol, fontsize / 7), center.X, center.Y,
-               (float)(center.X + R * Math.Cos(180*min/PI)), (float)(center.Y - R * Math.Sin(180*min/PI)));
+               (float)(center.X + R * Math.Cos(-angle)), (float)(center.Y - R * Math.Sin(-angle)));
 
             //секундная
+            angle = (clock.Time.Second / 60.0) * 2 * Math.PI - Math.PI / 2.0;
             _g.DrawLine(new Pen(clock.Titlecol, fontsize / 10), center.X, center.Y,
-               (float)(center.X + R * Math.Cos(180*sec/PI)), (float)(center.Y - R * Math.Sin(180*sec/PI)));
+               (float)(center.X + R * Math.Cos(-angle)), (float)(center.Y - R * Math.Sin(-angle)));
 
             clock.Graphic.DrawImage(bm as Image, clock.Location);
         }
